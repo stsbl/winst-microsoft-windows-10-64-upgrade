@@ -2,28 +2,16 @@
 Message=Führe Windows 10 Upgrade durch...
 DefVar $ExitCode$
 DefVar $Progress$
-DefVar $MSVersionInfo$
-DefStringList $MSVersionMap$
-DefVar $BuildNumber$
-DefVar $UpgradeRequired$
 
 [Actions]
 ShowBitmap "%SystemDrive%\tmp\microsoft-windows-10-64-upgrade\logo.png" "Windows 10 Upgrade"
 Registry_DisableScreenSaver
 DosInAnIcon_gpupdate
-Sub_Check
-Sub_Upgrade
+WinBatch_Upgrade
+Sub_HandleExitCode
 Set $Progress$ = "2"
 Registry_UpdateProgress /32bit
 ExitWindows /Reboot
-
-[Sub_Upgrade]
-if ($UpgradeRequired$ = "true")
-  WinBatch_Upgrade
-  Sub_HandleExitCode
-endif
-
-Registry_DeleteAutoLogon
 
 [WinBatch_Upgrade]
 ; Command Line Doc for Windows 10 Setup: https://msdn.microsoft.com/de-de/library/windows/hardware/dn938368(v=vs.85).aspx
@@ -53,26 +41,3 @@ set "Progress" = "$Progress$"
 [Registry_DisableScreensaver]
 openkey [HKEY_CURRENT_USER\Software\Policies\Microsoft\Windows\Control Panel\Desktop]
 set "ScreenSaveTimeOut"="0"
-
-[Registry:DeleteAutoLogon]
-openkey [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon]
-deletevar "DefaultUserName"
-deletevar "DefaultPassword"
-set "AutoAdminLogon" = "0"
-
-[Sub_Check]
-Set $MSVersionInfo$ = GetMsVersionInfo
-if CompareDotSeparatedNumbers($MSVersionInfo$, "<", "10.0")
-  LogError "This package requires Windows 10."
-  IsFatalError
-endif
-
-Set $MSVersionMap$ = GetMSVersionMap
-Set $BuildNumber$ = TakeString("1", SplitString(TakeString("2", $MSVersionMap$), "="))
-
-if CompareDotSeparatedNumbers($BuildNumber$, "<", "14393")
-   Set $UpgradeRequired$ = "true"
-else
-   comment "No upgrade required, Windows 10 seems to be up-to-date."
-   Set $UpgradeRequired$ = "false"
-endif
