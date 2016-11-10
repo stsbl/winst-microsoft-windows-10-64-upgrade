@@ -121,10 +121,10 @@ Registry_RestoreAutoLogin /SysNative
 
 [Registry_RestoreAutoLogin]
 openkey [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon]
-set "DefaultUserName"="$AutoLogonUser$"
-set "DefaultPassword"="$AutoLogonPassword$"
-set "DefaultDomainName"="$AutoLogonDomain$"
-set "AutoAdminLogon"="$AutoAdminLogon$"
+set "DefaultUserName" = "$AutoLogonUser$"
+set "DefaultPassword" = "$AutoLogonPassword$"
+set "DefaultDomainName" = "$AutoLogonDomain$"
+set "AutoAdminLogon" = "$AutoAdminLogon$"
 
 [Sub_EnableAutoLogon]
 Set $opsiSetupAdminPassword$ = RandomStr
@@ -146,22 +146,22 @@ net localgroup $AdminGroup$ /add opsiSetupAdmin
 
 [Registry_EnableAutoLogin]
 openkey [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon]
-set "DefaultUserName"="opsiSetupAdmin"
-set "DefaultPassword"="$opsiSetupAdminPassword$"
-set "DefaultDomainName"="$LocalDomain$"
-set "AutoAdminLogon"="1"
+set "DefaultUserName" = "opsiSetupAdmin"
+set "DefaultPassword" = "$opsiSetupAdminPassword$"
+set "DefaultDomainName" = "$LocalDomain$"
+set "AutoAdminLogon" = "1"
 
 [Registry_LockKeyboard]
 openkey [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Kbdclass]
-set "Start"=REG_DWORD:0x4
+set "Start" = REG_DWORD:0x4
 openkey [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Mouclass]
-set "Start"=REG_DWORD:0x4
+set "Start" = REG_DWORD:0x4
 
 [Registry_UnlockKeyboard]
 openkey [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Kbdclass]
-set "Start"=REG_DWORD:0x1
+set "Start" = REG_DWORD:0x1
 openkey [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Mouclass]
-set "Start"=REG_DWORD:0x1
+set "Start" = REG_DWORD:0x1
 
 [PatchTextFile_Startup]
 GoToTop
