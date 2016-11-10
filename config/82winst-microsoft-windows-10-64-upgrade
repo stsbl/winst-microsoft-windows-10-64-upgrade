@@ -1,0 +1,7 @@
+HoldBackWin10Upgrades:
+name            Activate hold back of operating system upgrades on Windows 10 Clients
+description     Upgrades on Windows 10 Clients are held back for three months to allow centralized installation via software deployment.
+type            bool
+group           Software: Microsoft Windows 10 Upgrade x64
+default         true
+
