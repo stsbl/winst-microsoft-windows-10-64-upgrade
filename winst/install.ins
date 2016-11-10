@@ -1,0 +1,186 @@
+[Initial]
+Message=Führe Windows 10 Upgrade durch...
+DefVar $BuildNumber$
+DefVar $MSVersionInfo$
+DefStringList $MSVersionMap$
+DefVar $UpgradeRequired$
+DefVar $AutoLogonPassword$
+DefVar $AutoLogonUser$
+DefVar $AutoLogonDomain$
+DefVar $AutoAdminLogon$
+DefVar $AdminGroup$
+DefVar $opsiSetupAdminPassword$
+DefVar $Progress$
+DefVar $Status$
+DefVar $LocalDomain$
+
+[Actions]
+ShowBitmap "%ScriptPath%\logo.png" "Windows 10 Upgrade"
+Sub_Start
+
+[Sub_Start]
+Set $Progress$ = GetRegistryStringValue32("[HKEY_LOCAL_MACHINE\SOFTWARE\opsi.org\winst\microsoft-windows-10-64-upgrade] Progress")
+if ($Progress$ = "")
+  ; Schritt 1: Autologin-Zustand sichern, lokalen Admin anlegen, Autologin einrichten, Tastatur und Maus sperren, lokales Skript und Setup kopieren und in den Autostart legen, Neuinstallation vormerken, Computer neu starten.
+  Sub_StepOne
+endif
+
+if ($Progress$ = "1")
+  ; Schritt 2: Dieser Teil läuft lokal ab - Upgrade ausführen und prüfen ob das erfolgreich war, Fehler speichern und Computer neu starten, siehe localsetup.ins
+  ; Falls das Hauptskript während des Setupvorgangs startet, Neuinstallation vormerken und Skript sofort beenden, damit Login des Admins möglich ist
+  OpsiServiceCall_Reinstall
+  ExitWindows /ImmediateLogout
+endif
+
+if ($Progress$ = "2")
+  ; Nach erfolgten Upgrade aufräumen
+  Sub_StepTwo
+endif
+
+[Sub_Check]
+Set $MSVersionInfo$ = GetMsVersionInfo
+if CompareDotSeparatedNumbers($MSVersionInfo$, "<", "10.0")
+  LogError "This package requires Windows 10."
+  IsFatalError
+endif
+
+Set $MSVersionMap$ = GetMSVersionMap
+Set $BuildNumber$ = TakeString("1", SplitString(TakeString("2", $MSVersionMap$), "="))
+
+if CompareDotSeparatedNumbers($BuildNumber$, "<", "14393")
+  Set $UpgradeRequired$ = "true"
+else
+  comment "No upgrade required, Windows 10 seems to be up-to-date."
+  Set $UpgradeRequired$ = "false"
+endif
+
+[Sub_StepOne]
+Sub_Check
+if ($UpgradeRequired$ = "true")
+  Files_Copy
+  Sub_BackupAutoLogon
+  Sub_EnableAutoLogon
+  Registry_LockKeyboard
+  PatchTextFile_Startup "%CommonStartupDir%\Windows 10 Upgrade.bat"
+  Set $Progress$ = "1"
+  Registry_UpdateProgress /32bit
+  OpsiServiceCall_Reinstall
+  ExitWindows /ImmediateReboot
+endif
+
+[Sub_StepTwo]
+Sub_RestoreAutoLogon
+DosInAnIcon_UserDel
+Files_Cleanup
+Registry_UnlockKeyboard
+Set $Progress$ = ""
+Registry_UpdateProgress /32bit
+Registry_Cleanup
+Sub_Check
+ExitWindows /Reboot
+if not($UpgradeRequired$ = "false")
+  LogError "Windows 10 is still not up-to-date."
+  IsFatalError
+endif
+
+[Registry_Cleanup]
+deletekey [HKEY_LOCAL_MACHINE\SOFTWARE\opsi.org\winst\microsoft-windows-10-64-upgrade]
+
+[Files_Copy]
+copy -se "%ScriptPath%\data\*" "%SystemDrive%\tmp\microsoft-windows-10-64-upgrade"
+copy "%ScriptPath%\localsetup.ins" "%SystemDrive%\tmp\microsoft-windows-10-64-upgrade"
+copy "%ScriptPath%\logo.png" "%SystemDrive%\tmp\\microsoft-windows-10-64-upgrade"
+
+[Files_Cleanup]
+delete -sfc "%SystemDrive%\tmp\microsoft-windows-10-64-upgrade\"
+delete -fc "%SystemDrive%\tmp\microsoft-windows-10-64-upgrade.ins"
+delete -fc "%SystemDrive%\tmp\microsoft-windows-10-64-upgrade.png"
+delete -fc "%CommonStartupDir%\Windows 10 Upgrade.bat"
+
+[Sub_BackupAutoLogon]
+Set $AutoLogonPassword$ = GetRegistryStringValueSysnative("[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon] DefaultPassword")
+Set $AutoLogonUser$ = GetRegistryStringValueSysnative("[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon] DefaultUserName")
+Set $AutoLogonDomain$ = GetRegistryStringValueSysnative("[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon] DefaultDomainName")
+Set $AutoAdminLogon$ = GetRegistryStringValueSysnative("[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon] AutoAdminLogon")
+Registry_SaveAutoLogon /32bit
+
+[Registry_SaveAutoLogon]
+openkey [HKEY_LOCAL_MACHINE\SOFTWARE\opsi.org\winst\microsoft-windows-10-64-upgrade\Winlogon]
+set "DefaultPassword" = "$AutoLogonPassword$"
+set "DefaultUserName" = "$AutoLogonUser$"
+set "DefaultDomainName" = "$AutoLogonDomain$"
+set "AutoAdminLogon" = "$AutoAdminLogon$"
+
+[Sub_RestoreAutoLogon]
+Set $AutoLogonPassword$ = GetRegistryStringValue32("[HKEY_LOCAL_MACHINE\SOFTWARE\opsi.org\winst\microsoft-windows-10-64-upgrade\Winlogon] DefaultPassword")
+Set $AutoLogonUser$ = GetRegistryStringValue32("[HKEY_LOCAL_MACHINE\SOFTWARE\opsi.org\winst\microsoft-windows-10-64-upgrade\Winlogon] DefaultUserName")
+Set $AutoLogonDomain$ = GetRegistryStringValue32("[HKEY_LOCAL_MACHINE\SOFTWARE\opsi.org\winst\microsoft-windows-10-64-upgrade\Winlogon] DefaultDomainName")
+Set $AutoAdminLogon$ = GetRegistryStringValue32("[HKEY_LOCAL_MACHINE\SOFTWARE\opsi.org\winst\microsoft-windows-10-64-upgrade\Winlogon] AutoAdminLogon")
+
+Registry_RestoreAutoLogin /SysNative
+
+[Registry_RestoreAutoLogin]
+openkey [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon]
+set "DefaultUserName"="$AutoLogonUser$"
+set "DefaultPassword"="$AutoLogonPassword$"
+set "DefaultDomainName"="$AutoLogonDomain$"
+set "AutoAdminLogon"="$AutoAdminLogon$"
+
+[Sub_EnableAutoLogon]
+Set $opsiSetupAdminPassword$ = RandomStr
+Set $LocalDomain$ = "%PcName%"
+Set $AdminGroup$ = SidToName("S-1-5-32-544")
+DosInAnIcon_UserDel
+DosInAnIcon_UserAdd
+Registry_EnableAutoLogin /sysnative
+
+[DosInAnIcon_UserDel]
+@echo off
+net user opsiSetupAdmin /delete
+del /S /Q "%ProfileDir%\opsiSetupAdmin"
+
+[DosInAnIcon_UserAdd]
+@echo off
+net user opsiSetupAdmin $opsiSetupAdminPassword$ /add
+net localgroup $AdminGroup$ /add opsiSetupAdmin
+
+[Registry_EnableAutoLogin]
+openkey [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon]
+set "DefaultUserName"="opsiSetupAdmin"
+set "DefaultPassword"="$opsiSetupAdminPassword$"
+set "DefaultDomainName"="$LocalDomain$"
+set "AutoAdminLogon"="1"
+
+[Registry_LockKeyboard]
+openkey [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Kbdclass]
+set "Start"=REG_DWORD:0x4
+openkey [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Mouclass]
+set "Start"=REG_DWORD:0x4
+
+[Registry_UnlockKeyboard]
+openkey [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Kbdclass]
+set "Start"=REG_DWORD:0x1
+openkey [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Mouclass]
+set "Start"=REG_DWORD:0x1
+
+[PatchTextFile_Startup]
+GoToTop
+AddLine '"%WinstDir%\winst32.exe" "%SystemDrive%\tmp\microsoft-windows-10-64-upgrade\localsetup.ins" /logfile "%SystemDrive%\tmp\microsoft-windows-10-64-upgrade.log" /batch'
+
+
+[LinkFolder_Cleanup]
+set_basefolder common_startup
+delete_element "Windows 10 Upgrade"
+
+[Registry_UpdateProgress]
+openkey [HKEY_LOCAL_MACHINE\SOFTWARE\opsi.org\winst\microsoft-windows-10-64-upgrade]
+set "Progress" = "$Progress$"
+
+[OpsiServiceCall_Reinstall]
+"method":"setProductActionRequest"
+"params":[
+    "%installingProdName%",
+    "",
+    "setup"
+]
+

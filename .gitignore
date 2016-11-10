@@ -1,0 +1,7 @@
+debian/winst-microsoft-windows-10-64-upgrade/*
+debian/winst-microsoft-windows-10-64-upgrade-data/*
+debian/winst-microsoft-windows-10-64-upgrade.debhelper.log
+debian/winst-microsoft-windows-10-64-upgrade-data.debhelper.log
+debian/winst-microsoft-windows-10-64-upgrade.substvars
+debian/winst-microsoft-windows-10-64-upgrade-data.substvars
+debian/files

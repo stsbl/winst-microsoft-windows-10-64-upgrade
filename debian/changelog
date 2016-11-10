@@ -1,0 +1,5 @@
+winst-microsoft-windows-10-64-upgrade-10.0.143930 (1.0-1) unstable; urgency=low
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- root <root@stsbl.test>  Thu, 10 Nov 2016 04:05:13 +0100

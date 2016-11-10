@@ -1,0 +1,5 @@
+msgid "Upgrades on Windows 10 Clients are held back for three months to allow centralized installation via software deployment."
+msgstr "Upgrades auf Windows 10-Clients werden für drei Monate zurückgehalten, um die zentrale Installation über die Softwareverteilung zu ermöglichen."
+
+msgid "Activate hold back of operating system upgrades on Windows 10 Clients"
+msgstr "Zurückhalten von Betriebsystem-Upgrades auf Windows 10-Clients aktivieren"
