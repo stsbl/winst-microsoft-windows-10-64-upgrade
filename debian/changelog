@@ -1,5 +1,8 @@
-winst-microsoft-windows-10-64-upgrade-10.0.143930 (1.0-1) unstable; urgency=low
+winst-microsoft-windows-10-64-upgrade (10.0.14393-1.0) experimental; urgency=medium
 
-  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+ [ Felix Jacobi ]
+ * Imitial release.
 
- -- root <root@stsbl.test>  Thu, 10 Nov 2016 04:05:13 +0100
+ [ Stadtteilschule Blankenese ]
+
+ -- Stadtteilschule Blankenese <repository@stsbl.de>  Thu, 10 Nov 2016 07:02:02 +0100
