@@ -1,0 +1,5 @@
+PACKAGE (unknown) yakkety; urgency=medium
+
+  * debian/changelog
+
+ -- Stadtteilschule Blankenese <repository@stsbl.de>  Thu, 10 Nov 2016 07:01:35 +0100
