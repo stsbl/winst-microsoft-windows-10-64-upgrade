@@ -8,11 +8,11 @@ Standards-Version: 3.9.5
 Package: winst-microsoft-windows-10-64-upgrade
 architecture: all
 Depends: winst-microsoft-windows-10-64-upgrade-data
-Description: winst Microsoft Windows 10 Microsoft Windows 10 Upgrade x64
+Description: winst Microsoft Windows 10 Upgrade x64
  Aktualisiert den Computer auf die aktuellste Version von Windows 10.
 Tag: suite::iserv:deploy, role::package
 
 Package: winst-microsoft-windows-10-64-upgrade-data
 Architecture: all
-Description: winst Microsoft Windows 10 Microsoft Windows 10 Upgrade x64
+Description: winst Microsoft Windows 10 Upgrade x64
  Dieses Paket enthält die Daten des Programms.
