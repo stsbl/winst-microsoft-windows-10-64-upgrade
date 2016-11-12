@@ -1,3 +1,13 @@
+winst-microsoft-windows-10-64-upgrade (10.0.14393-1.2) experimental; urgency=high
+
+  [ Felix Jacobi ]
+  * win10.reg: Fixed registry value name.
+  * general: Fixed maintainer mail address.
+
+  [ Stadtteilschule Blankenese ]
+
+ -- Stadtteilschule Blankenese <repository@stsbl.de>  Sat, 12 Nov 2016 21:30:49 +0100
+
 winst-microsoft-windows-10-64-upgrade (10.0.14393-1.1) experimental; urgency=medium
 
   [ Felix Jacobi ]
