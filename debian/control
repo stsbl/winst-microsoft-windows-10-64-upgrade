@@ -1,7 +1,7 @@
 Source: winst-microsoft-windows-10-64-upgrade
 Section: non-free/misc
 Priority: extra
-Maintainer: Stadtteilschule Blankenese <repositoryq@stsbl.de>
+Maintainer: Stadtteilschule Blankenese <repository@stsbl.de>
 Build-Depends: debhelper (>= 9)
 Standards-Version: 3.9.5
 
