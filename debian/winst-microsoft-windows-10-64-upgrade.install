@@ -4,3 +4,4 @@ debian/changelog DEBIAN/
 iconf/* usr/share/iserv/iconf/
 config/* usr/share/iserv/iservcfg/config/
 share/* usr/share/iserv/
+iservchk/* usr/share/iserv/iconf/etc/iserv/chk.d/

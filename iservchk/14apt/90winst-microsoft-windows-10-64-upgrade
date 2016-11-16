@@ -1,0 +1,5 @@
+# Mark iserv-windows-regpatch as manually installed for the case it was installed via Debian dependency to prevent
+# accidentally uninstalltion together with winst-microsoft-windows-10-64-upgrade.
+
+Test 'Mark winst-iserv-windows-regpatch as manually installed' '[ ! $(apt-mark showauto | grep -E "winst-iserv-windows-regpatch$") ]' 'apt-mark manual winst-iserv-windows-regpatch'
+
