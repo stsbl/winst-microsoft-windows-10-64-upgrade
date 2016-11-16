@@ -1,3 +1,22 @@
+winst-microsoft-windows-10-64-upgrade (10.0.14393-1.3) experimental; urgency=medium
+
+  [ Felix Jacobi ]
+  * Fixed i10n.
+  * Added Reinstallation call for iserv-windows-regpatch and opsi-client-agent.
+  * Added Debian Dependency on winst-iserv-windows-regpatch.
+  * Added option to auto-apply the upgrade to all Windows 10 x64 computers (disabled by default).
+
+  [ Stadtteilschule Blankenese ]
+
+  iserv: Das Paket enthält eine neue Option, mit der das Windows 10-Upgrade
+  automatisch auf alle Windows 10-Rechner angewendet werden kann, die mittels
+  Softwareverteilung installiert wurden. Die Option kann bei Bedarf in der
+  Systemkonfiguration unter "Software: Microsoft Windows 10 Upgrade x64" >
+  "Upgrade automatisch auf allen Computern anwenden, die Windows 10
+  installiert haben" angeschaltet werden.
+
+ -- Stadtteilschule Blankenese <repository@stsbl.de>  Thu, 17 Nov 2016 00:26:04 +0100
+
 winst-microsoft-windows-10-64-upgrade (10.0.14393-1.2) experimental; urgency=high
 
   [ Felix Jacobi ]
