@@ -81,6 +81,10 @@ ExitWindows /Reboot
 if not($UpgradeRequired$ = "false")
   LogError "Windows 10 is still not up-to-date."
   IsFatalError
+else
+  ; Reinstall Registry Patch and Client Agent to apply some settings which are lost during upgrade again
+  OpsiServiceCall_Reinstall_RegPatch
+  OpsiServiceCall_Reinstall_ClientAgent
 endif
 
 [Registry_Cleanup]
@@ -184,3 +188,18 @@ set "Progress" = "$Progress$"
     "setup"
 ]
 
+[OpsiServiceCall_Reinstall_RegPatch]
+"method":"setProductActionRequest"
+"params":[
+    "iserv-windows-regpatch",
+    "",
+    "setup"
+]
+
+[OpsiServiceCall_Reinstall_ClientAgent]
+"method":"setProductActionRequest"
+"params":[
+    "opsi-client-agent",
+    "",
+    "setup"
+]
