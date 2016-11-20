@@ -1,0 +1,6 @@
+# Removed broken changelog entry by winst-microsoft-windows-10-64-upgrade-data
+Test "Deploy: Remove broken entry in news_changelog for winst-microsoft-windows-10-64-upgrade"
+  "grep ^60winst-microsoft-windows-10-64-upgrade$ /var/lib/iserv/config/update.log"
+  'psql -c "DELETE FROM news_changelog WHERE package = \'winst-microsoft-windows-10-64-upgrade\' AND text = \'Das Paket enthält eine neue Option, mit der das Windows 10-Upgrade\';" iserv postgres &&
+    echo 60winst-microsoft-windows-10-64-upgrade >> /var/lib/iserv/config/update.log"
+
