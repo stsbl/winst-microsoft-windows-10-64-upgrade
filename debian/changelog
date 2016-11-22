@@ -1,3 +1,13 @@
+winst-microsoft-windows-10-64-upgrade (10.0.14393-1.6) experimental; urgency=medium
+
+  [ Felix Jacobi ]
+  * Fixed sql query in legacy script.
+    Note: The legacy script will run again.
+
+  [ Stadtteilschule Blankenese ]
+
+ -- Stadtteilschule Blankenese <repository@stsbl.de>  Wed, 23 Nov 2016 00:04:39 +0100
+
 winst-microsoft-windows-10-64-upgrade (10.0.14393-1.5) experimental; urgency=medium
 
   [ Felix Jacobi ]
