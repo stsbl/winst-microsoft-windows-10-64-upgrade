@@ -1,3 +1,13 @@
+winst-microsoft-windows-10-64-upgrade (10.14393-1.7) experimental; urgency=medium
+
+  [ Felix Jacobi ]
+  * Fixed iservchk script again.
+    Note: It will run again, hopefully the last time!
+
+  [ Stadtteilschule Blankenese ]
+
+ -- Stadtteilschule Blankenese <repository@stsbl.de>  Mon, 28 Nov 2016 09:55:44 +0100
+
 winst-microsoft-windows-10-64-upgrade (10.0.14393-1.6) experimental; urgency=medium
 
   [ Felix Jacobi ]
