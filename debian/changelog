@@ -1,4 +1,4 @@
-winst-microsoft-windows-10-64-upgrade (10.14393-1.7) experimental; urgency=medium
+winst-microsoft-windows-10-64-upgrade (10.0.14393-1.7) experimental; urgency=medium
 
   [ Felix Jacobi ]
   * Fixed iservchk script again.
