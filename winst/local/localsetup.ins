@@ -1,0 +1,53 @@
+[Initial]
+Message=Führe Windows 10 Upgrade durch...
+DefVar $ExitCode$
+DefVar $Progress$
+
+[Actions]
+ShowBitmap "%opsiTmpDir%\microsoft-windows-10-64-upgrade\logo.png" "Windows 10 Upgrade"
+Registry_DisableScreenSaver
+DosInAnIcon_gpupdate
+WinBatch_Upgrade
+Sub_HandleExitCode
+PatchTextFile_OpsiClientAgent "%CommonStartupDir%\opsi-client-agent.bat"
+Files_Cleanup
+Set $Progress$ = "2"
+Registry_UpdateProgress /32bit
+ExitWindows /Reboot
+
+[WinBatch_Upgrade]
+; Command Line Doc for Windows 10 Setup: https://msdn.microsoft.com/de-de/library/windows/hardware/dn938368(v=vs.85).aspx
+"%opsiTmpDir%\microsoft-windows-10-64-upgrade\setup.exe" /auto upgrade /compat ignorewarning /dynamicupdate enable /migratedrivers all /showoobe none /telemetry disable /noreboot
+
+[DosInAnIcon_gpupdate]
+gpupdate /force
+
+[Sub_HandleExitCode]
+; check return code
+Set $ExitCode$ = GetLastExitCode
+comment "GetLastExitCode: " + $ExitCode$
+; 0x3 = CONX_SETUP_EXITCODE_CONTINUE_REBOOT
+if not($ExitCode$ = "3")
+  LogError "Fatal: setup returned exit code " + $ExitCode$
+  Registry_SetFailure /32bit
+endif
+
+[Registry_SetFailure]
+openkey [HKEY_LOCAL_MACHINE\SOFTWARE\opsi.org\winst\microsoft-windows-10-64-upgrade]
+set "Failure" = "1"
+
+[Registry_UpdateProgress]
+openkey [HKEY_LOCAL_MACHINE\SOFTWARE\opsi.org\winst\microsoft-windows-10-64-upgrade]
+set "Progress" = "$Progress$"
+
+[Registry_DisableScreensaver]
+openkey [HKEY_CURRENT_USER\Software\Policies\Microsoft\Windows\Control Panel\Desktop]
+set "ScreenSaveTimeOut"="0"
+
+[PatchTextFile_OpsiClientAgent]
+GoToTop
+AddLine '"%SystemDrive%\tmp\nircmd\nircmd.exe" elevate cmd /c "%opsiTmpDir%\microsoft-windows-10-64-upgrade\opsi-client-agent.bat"'
+
+[Files_Cleanup]
+; kill startup script for upgrade to prevent a second running
+delete -fc "%CommonStartupDir%\Windows 10 Upgrade.bat"

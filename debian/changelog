@@ -1,4 +1,23 @@
-winst-microsoft-windows-10-64-upgrade (10.14393-1.7) experimental; urgency=medium
+winst-microsoft-windows-10-64-upgrade (10.0.14393-1.8) experimental; urgency=medium
+
+  * More reliable installation.
+    - opsi-client-agent is copied to hard drive and in reinstalled after
+      upgrade, because sometimes it breaks during upgrade and does not start
+      to clean up.
+    - Fixed issues with UAC.
+  * Fixed success check, which sometimes returned wrong result.
+  * Prevent user in post upgrade phase to take over control about the computer
+    with disabling keyboard.
+  * Copy registry patch to hard disk and apply them to re-disable fast statup
+    and other Windows "features".
+  * Changed user name of local administrator from opsiSetupAdmin to
+    UpgradeSetupAdmin to prevent conflict with other software packages.
+
+  iserv: Die Zuverlässigkeit der Upgrade-Installation wurde besonders bezogen auf den IServ-Registry-Patch und den opsi-client-agent verbessert.
+
+ -- Stadtteilschule Blankenese <repository@stsbl.de>  Mon, 19 Dec 2016 16:02:44 +0100
+
+winst-microsoft-windows-10-64-upgrade (10.0.14393-1.7) experimental; urgency=medium
 
   [ Felix Jacobi ]
   * Fixed iservchk script again.
