@@ -7,7 +7,7 @@ default         true
 
 AutoApplyWin10Upgrade:
 name		Apply Upgrade automatically to all computers which have Windows 10 installed
-description	If you enable this, the upgrade will assigned automatically to every Computer which have Windows 10 x64 via Software Deployment installed
+description	If you enable this, the upgrade will assigned automatically to every Computer which have Windows 10 x64 via Software Deployment installed.
 type		bool
 group		Software: Microsoft Windows 10 Upgrade x64
 default		false
