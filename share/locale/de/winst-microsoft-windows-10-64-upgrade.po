@@ -8,4 +8,4 @@ msgid "Apply Upgrade automatically to all computers which have Windows 10 instal
 msgstr "Upgrade automatisch auf allen Computern anwenden, die Windows 10 installiert haben"
 
 msgid "If you enable this, the upgrade will assigned automatically to every Computer which have Windows 10 x64 via Software Deployment installed."
-msgstr "Wenn sie dies aktivieren, wird das Upgrade automatisch jedem Computer zugewiesen, der Windows 10 64-bit über die Softwareverteilung installiert hat."
+msgstr "Wenn Sie dies aktivieren, wird das Upgrade automatisch jedem Computer zugewiesen, der Windows 10 64-bit über die Softwareverteilung installiert hat."
