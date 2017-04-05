@@ -63,7 +63,7 @@ endif
 Set $MSVersionMap$ = GetMSVersionMap
 Set $BuildNumber$ = TakeString("1", SplitString(TakeString("2", $MSVersionMap$), "="))
 
-if CompareDotSeparatedNumbers($BuildNumber$, "<", "14393")
+if CompareDotSeparatedNumbers($BuildNumber$, "<", "15063")
   Set $UpgradeRequired$ = "true"
 else
   comment "No upgrade required, Windows 10 seems to be up-to-date."
@@ -81,7 +81,7 @@ if ($UpgradeRequired$ = "true")
   Registry_LockKeyboard
   PatchTextFile_Startup "%CommonStartupDir%\Windows 10 Upgrade.bat"
   Sub_GetPCPatchPassword
-  PatchTextFile_OpsiClientAgentBatch "%opsiTmpDir%\%installingProdName%\opsi-client-agent.bat"
+  PatchTextFile_OpsiClientAgentBatch "%SystemDrive%\tmp\%installingProdName%\opsi-client-agent.bat"
   Set $Progress$ = "1"
   Registry_UpdateProgress /32bit
   Registry_DisableUAC /SysNative
@@ -93,6 +93,7 @@ endif
 Sub_RestoreAutoLogon
 DosInAnIcon_UserDel
 Files_Cleanup
+LinkFolder_Cleanup
 Registry_UnlockKeyboard
 Set $Progress$ = ""
 Registry_UpdateProgress /32bit
@@ -112,20 +113,23 @@ endif
 [Registry_Cleanup]
 deletekey [HKEY_LOCAL_MACHINE\SOFTWARE\opsi.org\winst\%installingProdName%]
 
+[LinkFolder_Cleanup]
+set_basefolder common_startup
+delete_element "Windows 10 Upgrade"
+
 [Files_Copy]
-copy -se "%ScriptPath%\data\*" "%opsiTmpDir%\%installingProdName%\"
-copy "%ScriptPath%\local\*.*" "%opsiTmpDir%\%installingProdName%\"
-copy "%ScriptPath%\logo.png" "%opsiTmpDir%\%installingProdName%\"
+copy -se "%ScriptPath%\data\*" "%SystemDrive%\tmp\%installingProdName%\"
+copy "%ScriptPath%\local\*.*" "%SystemDrive%\tmp\%installingProdName%\"
+copy "%ScriptPath%\logo.png" "%SystemDrive%\tmp\%installingProdName%\"
 copy "%ScriptPath%\nircmd\*.*" "%SystemDrive%\tmp\nircmd\"
-copy "%ScriptDrive%\install\iserv-windows-regpatch\netlogon\win10.reg" "%opsiTmpDir%\%installingProdName%\"
-copy -se "%ScriptDrive%\install\opsi-client-agent\*" "%opsiTmpDir%\opsi-client-agent\"
+copy "%ScriptDrive%\install\iserv-windows-regpatch\netlogon\win10.reg" "%SystemDrive%\tmp\%installingProdName%\"
+copy -se "%ScriptDrive%\install\opsi-client-agent\*" "%SystemDrive%\tmp\opsi-client-agent\"
 
 [Files_Cleanup]
-delete -sfc "%opsiTmpDir%\%installingProdName%\"
-delete -sfc "%opsiTmpDir%\opsi-client-agent\"
+delete -sfc "%SystemDrive%\tmp\%installingProdName%\"
+delete -sfc "%SystemDrive%\tmp\opsi-client-agent\"
 delete -sfc "%SystemDrive%\tmp\nircmd\"
 delete -fc "%CommonStartupDir%\Windows 10 Upgrade.bat"
-delete -fc "%CommonStartupDir%\opsi-client-agent.bat"
 delete -fc "%opsiLogDir%\%installingProdName%.log"
 delete -fc "%opsiLogDir%\%installingProdName%.err"
 delete -fc "%opsiLogDir%\%installingProdName%.history"
@@ -167,7 +171,7 @@ set "AutoAdminLogon"="$AutoAdminLogon$"
 
 [Sub_EnableAutoLogon]
 Set $UpgradeSetupAdminPassword$ = RandomStr
-Set $LocalDomain$ = "%PcName%"
+Set $LocalDomain$ = "%PCName%"
 Set $AdminGroup$ = SidToName("S-1-5-32-544")
 Set $UserGroup$ = SidToName("S-1-5-32-545")
 DosInAnIcon_UserDel
@@ -206,19 +210,22 @@ set "Start"=REG_DWORD:0x1
 
 [PatchTextFile_Startup]
 GoToTop
-AddLine '"%WinstDir%\winst32.exe" "%opsiTmpDir%\%installingProdName%\localsetup.ins" /logfile "%opsiLogDir%\%installingProdName%.log" /batch'
+AddLine '"%WinstDir%\winst32.exe" "%SystemDrive%\tmp\%installingProdName%\localsetup.ins" /logfile "%opsiLogDir%\%installingProdName%.log" /batch'
 
 [PatchTextFile_OpsiClientAgentBatch]
 GoToTop
 AddLine '@echo off'
-AddLine 'reg import "%opsiTmpDir%\%installingProdName%\win10.reg"'
+; kill explorer to hide the windows gui
+AddLine 'taskkill /IM explorer.exe /F'
+AddLine 'reg import "%SystemDrive%\tmp\%installingProdName%\win10.reg"'
 AddLine 'net use p: \\%opsiServer%\netlogon $PCPatchPassword$ /user:pcpatch /persistent:no'
-AddLine 'cmd /c "%opsiTmpDir%\opsi-client-agent\install.bat" %opsiservicePassword% %opsiServer% %opsiDepotId%'
-AddLine 'reg import "%opsiTmpDir%\%installingProdName%\progress_step_3.reg"'
-AddLine 'net use p: \\%opsiServer%\deploy\install $PCPatchPassword$ /user:pcpatch /persistent:no'
-AddLine 'start /wait "" "%WinstDir%\winst32.exe" /opsiservice "https://%opsiServer%:4447" /clientid "%PcName%" /username "%PcName%" /password "%opsiservicePassword%" /productlist "%installingProdName%"'
+AddLine 'start /wait "%SystemDrive%\tmp\opsi-client-agent\install.bat" %opsiservicePassword% %opsiServer% %opsiDepotId%'
+AddLine 'reg import "%SystemDrive%\tmp\%installingProdName%\progress_step_3.reg"'
 AddLine 'net use p: /delete /yes'
-AddLine 'reg import "%opsiTmpDir%\%installingProdName%\progress_step_4.reg"'
+AddLine 'net use p: \\%opsiServer%\deploy\install $PCPatchPassword$ /user:pcpatch /persistent:no'
+AddLine 'start /wait "" "%WinstDir%\winst32.exe" /opsiservice "https://%opsiServer%:4447" /clientid "%PCName%" /username "%PCName%" /password "%opsiservicePassword%" /productlist "%installingProdName%"'
+AddLine 'net use p: /delete /yes'
+AddLine 'reg import "%SystemDrive%\tmp\%installingProdName%\progress_step_4.reg"'
 AddLine 'timeout /T 60 > NUL'
 AddLine 'shutdown /r /t 0'
 

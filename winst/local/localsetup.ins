@@ -4,20 +4,25 @@ DefVar $ExitCode$
 DefVar $Progress$
 
 [Actions]
-ShowBitmap "%opsiTmpDir%\microsoft-windows-10-64-upgrade\logo.png" "Windows 10 Upgrade"
+ShowBitmap "%SystemDrive%\tmp\microsoft-windows-10-64-upgrade\logo.png" "Windows 10 Upgrade"
+DosInAnIcon_Taskkill
 Registry_DisableScreenSaver
 DosInAnIcon_gpupdate
 WinBatch_Upgrade
 Sub_HandleExitCode
-PatchTextFile_OpsiClientAgent "%CommonStartupDir%\opsi-client-agent.bat"
-Files_Cleanup
+LinkFolder_NextStep
+Files_DeleteBatch
 Set $Progress$ = "2"
 Registry_UpdateProgress /32bit
 ExitWindows /Reboot
 
+[DosInAnIcon_Taskkill]
+; kill explorer to hide the windows gui
+taskkill /IM explorer.exe /F
+
 [WinBatch_Upgrade]
 ; Command Line Doc for Windows 10 Setup: https://msdn.microsoft.com/de-de/library/windows/hardware/dn938368(v=vs.85).aspx
-"%opsiTmpDir%\microsoft-windows-10-64-upgrade\setup.exe" /auto upgrade /compat ignorewarning /dynamicupdate enable /migratedrivers all /showoobe none /telemetry disable /noreboot
+"%SystemDrive%\tmp\microsoft-windows-10-64-upgrade\setup.exe" /auto upgrade /compat ignorewarning /dynamicupdate enable /migratedrivers all /showoobe none /telemetry disable /noreboot
 
 [DosInAnIcon_gpupdate]
 gpupdate /force
@@ -44,10 +49,12 @@ set "Progress" = "$Progress$"
 openkey [HKEY_CURRENT_USER\Software\Policies\Microsoft\Windows\Control Panel\Desktop]
 set "ScreenSaveTimeOut"="0"
 
-[PatchTextFile_OpsiClientAgent]
-GoToTop
-AddLine '"%SystemDrive%\tmp\nircmd\nircmd.exe" elevate cmd /c "%opsiTmpDir%\microsoft-windows-10-64-upgrade\opsi-client-agent.bat"'
+[LinkFolder_NextStep]
+set_basefolder common_startup
+set_link
+  name: Windows 10 Upgrade
+  target: %SystemDrive%\tmp\microsoft-windows-10-64-upgrade\opsi-client-agent.bat
+end_link
 
-[Files_Cleanup]
-; kill startup script for upgrade to prevent a second running
+[Files_DeleteBatch]
 delete -fc "%CommonStartupDir%\Windows 10 Upgrade.bat"
