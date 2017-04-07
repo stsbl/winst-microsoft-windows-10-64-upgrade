@@ -1,3 +1,11 @@
+winst-microsoft-windows-10-64-upgrade (10.0.15063-1.10) experimental; urgency=medium
+
+  * Improved script work flow.
+
+  iserv: Der Installationsablauf wurde in weiteren Punkten stabilisiert und verbessert. 
+
+ -- Stadtteilschule Blankenese <repository@stsbl.de>  Fri, 07 Apr 2017 16:41:22 +0200
+
 winst-microsoft-windows-10-64-upgrade (10.0.15063-1.9) experimental; urgency=medium
 
   * Updated to Windows 10 Build 15063 "Creators Update".
