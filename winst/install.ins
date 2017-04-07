@@ -14,6 +14,8 @@ DefVar $UpgradeSetupAdminPassword$
 DefVar $Progress$
 DefVar $Status$
 DefVar $LocalDomain$
+DefVar $Hostname$
+DefVar $Servername$
 DefVar $PCPatchPassword$
 
 [Actions]
@@ -23,8 +25,8 @@ Sub_Start
 [Sub_Start]
 Set $Progress$ = GetRegistryStringValue32("[HKEY_LOCAL_MACHINE\SOFTWARE\opsi.org\winst\%installingProdName%] Progress")
 if ($Progress$ = "")
-  ; Schritt 1: Autologin-Zustand sichern, lokalen Admin anlegen, Autologin einrichten, Tastatur und Maus sperren, lokales Skript und Setup kopieren und in den Autostart legen, Neuinstallation vormerken, Computer neu starten.
-  Sub_StepOne
+; Schritt 1: Autologin-Zustand sichern, lokalen Admin anlegen, Autologin einrichten, Tastatur und Maus sperren, lokales Skript und Setup kopieren und in den Autostart legen, Neuinstallation vormerken, Computer neu starten.
+Sub_StepOne
 endif
 
 if ($Progress$ = "1")
@@ -44,49 +46,54 @@ if ($Progress$ = "2")
 endif
 
 if ($Progress$ = "3")
+  Set $Progress$ = "4"
+  Registry_UpdateProgress /32bit
   OpsiServiceCall_Reinstall
-  ExitWindows /ImmediateLogout
+  ExitWindows /ImmediateReboot
 endif
-  
+
 if ($Progress$ = "4")
   ; Nach erfolgten Upgrade aufräumen
   Sub_StepTwo
+  OpsiServiceCall_Reinstall
+  ExitWindows /ImmediateReboot
 endif
 
 [Sub_Check]
 Set $MSVersionInfo$ = GetMsVersionInfo
 if CompareDotSeparatedNumbers($MSVersionInfo$, "<", "10.0")
-  LogError "This package requires Windows 10."
-  IsFatalError
+LogError "This package requires Windows 10."
+IsFatalError
 endif
 
 Set $MSVersionMap$ = GetMSVersionMap
 Set $BuildNumber$ = TakeString("1", SplitString(TakeString("2", $MSVersionMap$), "="))
 
 if CompareDotSeparatedNumbers($BuildNumber$, "<", "15063")
-  Set $UpgradeRequired$ = "true"
+Set $UpgradeRequired$ = "true"
 else
-  comment "No upgrade required, Windows 10 seems to be up-to-date."
-  Set $UpgradeRequired$ = "false"
+comment "No upgrade required, Windows 10 seems to be up-to-date."
+Set $UpgradeRequired$ = "false"
 endif
 
 [Sub_StepOne]
 Sub_Check
 if ($UpgradeRequired$ = "true")
-  ; Cleanup every rests to prevent conflicts
-  Files_Cleanup
-  Files_Copy
-  Sub_BackupAutoLogon
-  Sub_EnableAutoLogon
-  Registry_LockKeyboard
-  PatchTextFile_Startup "%CommonStartupDir%\Windows 10 Upgrade.bat"
-  Sub_GetPCPatchPassword
-  PatchTextFile_OpsiClientAgentBatch "%SystemDrive%\tmp\%installingProdName%\opsi-client-agent.bat"
-  Set $Progress$ = "1"
-  Registry_UpdateProgress /32bit
-  Registry_DisableUAC /SysNative
-  OpsiServiceCall_Reinstall
-  ExitWindows /ImmediateReboot
+; Cleanup every rests to prevent conflicts
+Files_Cleanup
+Files_Copy
+Sub_BackupAutoLogon
+Sub_EnableAutoLogon
+Registry_LockKeyboard
+PatchTextFile_Startup "%CommonStartupDir%\Windows 10 Upgrade.bat"
+Sub_GetHostname
+Sub_GetServername
+PatchTextFile_OpsiClientAgentBatch "%SystemDrive%\tmp\%installingProdName%\opsi-client-agent.bat"
+Set $Progress$ = "1"
+Registry_UpdateProgress /32bit
+Registry_DisableUAC /SysNative
+OpsiServiceCall_Reinstall
+ExitWindows /ImmediateReboot
 endif
 
 [Sub_StepTwo]
@@ -102,12 +109,12 @@ Registry_EnableUAC /SysNative
 Sub_Check
 ExitWindows /Reboot
 if ($UpgradeRequired$ = "true")
-  LogError "Windows 10 is still not up-to-date."
-  IsFatalError
+LogError "Windows 10 is still not up-to-date."
+IsFatalError
 else
-  ; Reinstall Registry Patch and Client Agent to apply some settings which are lost during upgrade again
-  OpsiServiceCall_Reinstall_RegPatch
-  OpsiServiceCall_Reinstall_ClientAgent
+; Reinstall Registry Patch and Client Agent to apply some settings which are lost during upgrade again
+OpsiServiceCall_Reinstall_RegPatch
+OpsiServiceCall_Reinstall_ClientAgent
 endif
 
 [Registry_Cleanup]
@@ -133,12 +140,6 @@ delete -fc "%CommonStartupDir%\Windows 10 Upgrade.bat"
 delete -fc "%opsiLogDir%\%installingProdName%.log"
 delete -fc "%opsiLogDir%\%installingProdName%.err"
 delete -fc "%opsiLogDir%\%installingProdName%.history"
-
-[Sub_GetPCPatchPassword]
-SetLogLevel=4
-Set $PCPatchPassword$ = TakeString("0", GetReturnListFromSection("OpsiServiceCall_PCPatchPassword"))
-SetConfidential $PCPatchPassword$
-SetLogLevel=6
 
 [Sub_BackupAutoLogon]
 Set $AutoLogonPassword$ = GetRegistryStringValueSysnative("[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon] DefaultPassword")
@@ -217,15 +218,14 @@ GoToTop
 AddLine '@echo off'
 ; kill explorer to hide the windows gui
 AddLine 'taskkill /IM explorer.exe /F'
-AddLine 'reg import "%SystemDrive%\tmp\%installingProdName%\win10.reg"'
-AddLine 'net use p: \\%opsiServer%\netlogon $PCPatchPassword$ /user:pcpatch /persistent:no'
-AddLine 'start /wait "%SystemDrive%\tmp\opsi-client-agent\install.bat" %opsiservicePassword% %opsiServer% %opsiDepotId%'
-AddLine 'reg import "%SystemDrive%\tmp\%installingProdName%\progress_step_3.reg"'
+AddLine '%SystemRoot%\System32\reg.exe import %SystemDrive%\tmp\%installingProdName%\win10.reg'
+AddLine 'net use p: \\$Hostname$\netlogon $PCPatchPassword$ /user:pcpatch /persistent:no'
+AddLine 'call %SystemDrive%\tmp\opsi-client-agent\install.bat %opsiservicePassword% $Servername$ $Hostname$'
+AddLine '%SystemRoot%\syswow64\reg.exe import %SystemDrive%\tmp\%installingProdName%\progress_step_3.reg'
 AddLine 'net use p: /delete /yes'
-AddLine 'net use p: \\%opsiServer%\deploy\install $PCPatchPassword$ /user:pcpatch /persistent:no'
-AddLine 'start /wait "" "%WinstDir%\winst32.exe" /opsiservice "https://%opsiServer%:4447" /clientid "%PCName%" /username "%PCName%" /password "%opsiservicePassword%" /productlist "%installingProdName%"'
-AddLine 'net use p: /delete /yes'
-AddLine 'reg import "%SystemDrive%\tmp\%installingProdName%\progress_step_4.reg"'
+AddLine 'net use p: \\$Hostname$\deploy $PCPatchPassword$ /user:pcpatch /persistent:no'
+AddLine '%WinstDir%\winst32.exe" /opsiservice "https://$Servername$:4447" /clientid "%PCName%" /username "%PCName%" /password "%opsiservicePassword%" /productlist "%installingProdName%"'
+Addline 'net use p: /delete /yes'
 AddLine 'timeout /T 60 > NUL'
 AddLine 'shutdown /r /t 0'
 
@@ -257,7 +257,19 @@ set "Progress" = "$Progress$"
     "setup"
 ]
 
-[OpsiServiceCall_PCPatchPassword]
+[OpsiServiceCall_GetHostname]
+"method":"iserv_cfg"
+"params":[
+  "Hostname"
+]
+
+[OpsiServiceCall_GetServername]
+"method":"iserv_cfg"
+"params":[
+  "Servername"
+]
+
+[OpsiServiceCall_GetPCPatchPassword]
 "method":"iserv_pcpatch_password"
 "params":[]
 
@@ -271,3 +283,14 @@ openkey [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\S
 set "EnableLUA" = REG_DWORD:1
 set "ConsentPromptBehaviorAdmin" = REG_DWORD:0
 
+[Sub_GetHostname]
+Set $Hostname$ = TakeString(0, GetReturnListFromSection("OpsiServiceCall_GetHostname"))
+
+[Sub_GetServername]
+Set $Servername$ = TakeString(0, GetReturnListFromSection("OpsiServiceCall_GetServername"))
+
+[Sub_GetPCPatchPassword]
+SetLogLevel=4
+Set $PCPatchPassword$ = TakeString(0, GetReturnListFromSection("OpsiServiceCall_GetPCPatchPassword"))
+SetConfidential $PCPatchPassword$
+SetLogLevel=6

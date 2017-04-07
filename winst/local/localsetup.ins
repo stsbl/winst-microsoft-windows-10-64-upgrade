@@ -53,7 +53,8 @@ set "ScreenSaveTimeOut"="0"
 set_basefolder common_startup
 set_link
   name: Windows 10 Upgrade
-  target: %SystemDrive%\tmp\microsoft-windows-10-64-upgrade\opsi-client-agent.bat
+  target: %SystemDrive%\tmp\nircmd\nircmd.exe
+  parameters: elevate cmd /c "%SystemDrive%\tmp\microsoft-windows-10-64-upgrade\opsi-client-agent.bat"
 end_link
 
 [Files_DeleteBatch]
