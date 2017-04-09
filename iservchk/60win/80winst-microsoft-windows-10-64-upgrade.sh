@@ -2,7 +2,6 @@
 
 . /usr/lib/iserv/cfg
 
-
 if [ $AutoApplyWin10Upgrade ]
 then
   cat << EOT
