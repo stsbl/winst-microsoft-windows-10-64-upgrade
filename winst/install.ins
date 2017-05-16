@@ -62,38 +62,39 @@ endif
 [Sub_Check]
 Set $MSVersionInfo$ = GetMsVersionInfo
 if CompareDotSeparatedNumbers($MSVersionInfo$, "<", "10.0")
-LogError "This package requires Windows 10."
-IsFatalError
+  LogError "This package requires Windows 10."
+  IsFatalError
 endif
 
 Set $MSVersionMap$ = GetMSVersionMap
 Set $BuildNumber$ = TakeString("1", SplitString(TakeString("2", $MSVersionMap$), "="))
 
 if CompareDotSeparatedNumbers($BuildNumber$, "<", "15063")
-Set $UpgradeRequired$ = "true"
+  Set $UpgradeRequired$ = "true"
 else
-comment "No upgrade required, Windows 10 seems to be up-to-date."
-Set $UpgradeRequired$ = "false"
+  comment "No upgrade required, Windows 10 seems to be up-to-date."
+  Set $UpgradeRequired$ = "false"
 endif
 
 [Sub_StepOne]
 Sub_Check
 if ($UpgradeRequired$ = "true")
-; Cleanup every rests to prevent conflicts
-Files_Cleanup
-Files_Copy
-Sub_BackupAutoLogon
-Sub_EnableAutoLogon
-Registry_LockKeyboard
-PatchTextFile_Startup "%CommonStartupDir%\Windows 10 Upgrade.bat"
-Sub_GetHostname
-Sub_GetServername
-PatchTextFile_OpsiClientAgentBatch "%SystemDrive%\tmp\%installingProdName%\opsi-client-agent.bat"
-Set $Progress$ = "1"
-Registry_UpdateProgress /32bit
-Registry_DisableUAC /SysNative
-OpsiServiceCall_Reinstall
-ExitWindows /ImmediateReboot
+  ; Cleanup every rests to prevent conflicts
+  Files_Cleanup
+  Files_Copy
+  Sub_BackupAutoLogon
+  Sub_EnableAutoLogon
+  Registry_LockKeyboard
+  PatchTextFile_Startup "%CommonStartupDir%\Windows 10 Upgrade.bat"
+  Sub_GetHostname
+  Sub_GetServername
+  Sub_GetPCPatchPassword
+  PatchTextFile_OpsiClientAgentBatch "%SystemDrive%\tmp\%installingProdName%\opsi-client-agent.bat"
+  Set $Progress$ = "1"
+  Registry_UpdateProgress /32bit
+  Registry_DisableUAC /SysNative
+  OpsiServiceCall_Reinstall
+  ExitWindows /ImmediateReboot
 endif
 
 [Sub_StepTwo]
@@ -109,12 +110,12 @@ Registry_EnableUAC /SysNative
 Sub_Check
 ExitWindows /Reboot
 if ($UpgradeRequired$ = "true")
-LogError "Windows 10 is still not up-to-date."
-IsFatalError
+  LogError "Windows 10 is still not up-to-date."
+  IsFatalError
 else
-; Reinstall Registry Patch and Client Agent to apply some settings which are lost during upgrade again
-OpsiServiceCall_Reinstall_RegPatch
-OpsiServiceCall_Reinstall_ClientAgent
+  ; Reinstall Registry Patch and Client Agent to apply some settings which are lost during upgrade again
+  OpsiServiceCall_Reinstall_RegPatch
+  OpsiServiceCall_Reinstall_ClientAgent
 endif
 
 [Registry_Cleanup]
@@ -218,13 +219,13 @@ GoToTop
 AddLine '@echo off'
 ; kill explorer to hide the windows gui
 AddLine 'taskkill /IM explorer.exe /F'
-AddLine '%SystemRoot%\System32\reg.exe import %SystemDrive%\tmp\%installingProdName%\win10.reg'
+AddLine 'reg.exe import %SystemDrive%\tmp\%installingProdName%\win10.reg'
 AddLine 'net use p: \\$Hostname$\netlogon $PCPatchPassword$ /user:pcpatch /persistent:no'
 AddLine 'call %SystemDrive%\tmp\opsi-client-agent\install.bat %opsiservicePassword% $Servername$ $Hostname$'
-AddLine '%SystemRoot%\syswow64\reg.exe import %SystemDrive%\tmp\%installingProdName%\progress_step_3.reg'
+AddLine 'reg.exe import %SystemDrive%\tmp\%installingProdName%\progress_step_3.reg /reg:32'
 AddLine 'net use p: /delete /yes'
 AddLine 'net use p: \\$Hostname$\deploy $PCPatchPassword$ /user:pcpatch /persistent:no'
-AddLine '%WinstDir%\winst32.exe" /opsiservice "https://$Servername$:4447" /clientid "%PCName%" /username "%PCName%" /password "%opsiservicePassword%" /productlist "%installingProdName%"'
+AddLine '"%WinstDir%\winst32.exe" /opsiservice "https://$Servername$:4447" /clientid "%PCName%" /username "%PCName%" /password "%opsiservicePassword%" /productlist "%installingProdName%"'
 Addline 'net use p: /delete /yes'
 AddLine 'timeout /T 60 > NUL'
 AddLine 'shutdown /r /t 0'
