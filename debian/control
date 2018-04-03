@@ -3,7 +3,7 @@ Section: non-free/misc
 Priority: extra
 Maintainer: Stadtteilschule Blankenese <repository@stsbl.de>
 Build-Depends: debhelper (>= 10)
-Standards-Version: 3.9.5
+Standards-Version: 4.1.3
 
 Package: winst-microsoft-windows-10-64-upgrade
 architecture: all
