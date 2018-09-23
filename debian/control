@@ -6,13 +6,12 @@ Build-Depends: debhelper (>= 10)
 Standards-Version: 4.1.3
 
 Package: winst-microsoft-windows-10-64-upgrade
-architecture: all
-Depends: winst-microsoft-windows-10-64-upgrade-data, winst-iserv-windows-regpatch
-Description: Microsoft Windows 10 Upgrade x64
- Aktualisiert den Computer auf die aktuellste Version von Windows 10.
+Architecture: all
+Depends: ${iserv:winst:Depends} 
+Description: ${iserv:winst:Description}
 Tag: suite::iserv:deploy, role::package
 
 Package: winst-microsoft-windows-10-64-upgrade-data
 Architecture: all
-Description: Microsoft Windows 10 Upgrade x64
- Dieses Paket enthält die Daten des Programms.
+Depends: ${iserv:winst:Depends}
+Description: ${iserv:winst:Description}
