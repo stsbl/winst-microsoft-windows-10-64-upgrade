@@ -14,6 +14,5 @@ Tag: suite::iserv:deploy, role::package
 
 Package: winst-microsoft-windows-10-64-upgrade-data
 Architecture: all
-Depends: ${iserv:winst:Depends}
 Xb-Private-IServ-Revision: ${iserv:Revision}
 Description: ${iserv:winst:Description}
