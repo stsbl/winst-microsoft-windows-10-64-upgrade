@@ -1,3 +1,9 @@
+winst-microsoft-windows-10-64-upgrade (10.0.15063-1.12) experimental; urgency=medium
+
+  * Fixed iservchk script
+
+ -- Felix Jacobi <felix.jacobi@stsbl.de>  Sun, 23 Sep 2018 15:56:37 +0200
+
 winst-microsoft-windows-10-64-upgrade (10.0.15063-1.11) experimental; urgency=medium
 
   * Fixed installation script.
