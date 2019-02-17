@@ -1,7 +1,0 @@
-winst/* srv/deploy/install/microsoft-windows-10-64-upgrade/
-debian/changelog srv/deploy/install/microsoft-windows-10-64-upgrade/
-debian/changelog DEBIAN/
-iconf/* usr/share/iserv/iconf/
-config/* usr/share/iserv/iservcfg/config/
-share/* usr/share/iserv/
-iservchk/* usr/share/iserv/iconf/etc/iserv/chk.d/
