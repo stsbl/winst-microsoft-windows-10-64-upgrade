@@ -5,7 +5,7 @@ winst-microsoft-windows-10-64-upgrade (19.03.15-1.0) experimental; urgency=mediu
 
   iserv: Das Paket wurde auf das October Update aktualisiert.
 
- -- Felix Jacobi <Felix@jacobi-hamburg.net>  Fri, 15 Mar 2019 22:20:54 +0100
+ -- Felix Jacobi <Felix@jacobi-hamburg.net>  Fri, 15 Mar 2019 22:25:15 +0100
 
 winst-microsoft-windows-10-64-upgrade (10.0.15063-1.12) experimental; urgency=medium
 
