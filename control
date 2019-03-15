@@ -5,7 +5,7 @@ name: Microsoft Windows 10 Upgrade x64
 description: Aktualisiert den Computer auf die aktuellste Version von Windows 10.
 advice: Dieses Paket ist nur für Computer mit 64-bit Windows geeignet. Das Paket kann nicht deinstalliert werden.
 version: 19.03.15
-packageVersion: 1.0
+packageVersion: 1.1
 setupScript: install.ins
 licenseRequired: true
 autoUpdate: false
