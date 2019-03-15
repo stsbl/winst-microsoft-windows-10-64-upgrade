@@ -1,3 +1,9 @@
+winst-microsoft-windows-10-64-upgrade (19.03.15-1.2) experimental; urgency=medium
+
+  * Fixed typo in debian/links
+
+ -- Felix Jacobi <Felix@jacobi-hamburg.net>  Sat, 16 Mar 2019 00:46:31 +0100
+
 winst-microsoft-windows-10-64-upgrade (19.03.15-1.1) experimental; urgency=medium
 
   * Only require data package instead of full Windows 10 stack
