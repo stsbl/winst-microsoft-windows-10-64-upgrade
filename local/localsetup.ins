@@ -21,7 +21,8 @@ ExitWindows /Reboot
 taskkill /IM explorer.exe /F
 
 [WinBatch_Upgrade]
-; Command Line Doc for Windows 10 Setup: https://msdn.microsoft.com/de-de/library/windows/hardware/dn938368(v=vs.85).aspx
+; Command Line Doc for Windows 10 Setup:
+; https://msdn.microsoft.com/de-de/library/windows/hardware/dn938368(v=vs.85).aspx
 "%SystemDrive%\tmp\microsoft-windows-10-64-upgrade\setup.exe" /auto upgrade /compat ignorewarning /dynamicupdate enable /migratedrivers all /showoobe none /telemetry disable /noreboot
 
 [DosInAnIcon_gpupdate]

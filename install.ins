@@ -1,22 +1,24 @@
 [Initial]
+Encoding=UTF-8
 Message=Führe Windows 10 Upgrade durch...
-DefVar $BuildNumber$
-DefVar $MSVersionInfo$
 DefStringList $MSVersionMap$
-DefVar $UpgradeRequired$
+DefVar $AdminGroup$
+DefVar $AutoAdminLogon$
+DefVar $AutoLogonDomain$
 DefVar $AutoLogonPassword$
 DefVar $AutoLogonUser$
-DefVar $AutoLogonDomain$
-DefVar $AutoAdminLogon$
-DefVar $AdminGroup$
-DefVar $UserGroup$
-DefVar $UpgradeSetupAdminPassword$
-DefVar $Progress$
-DefVar $Status$
-DefVar $LocalDomain$
+DefVar $BuildNumber$
 DefVar $Hostname$
-DefVar $Servername$
+DefVar $LocalDomain$
+DefVar $MSVersionInfo$
 DefVar $PCPatchPassword$
+DefVar $Progress$
+DefVar $Servername$
+DefVar $Status$
+DefVar $SupportedBuildNumber$
+DefVar $UpgradeRequired$
+DefVar $UpgradeSetupAdminPassword$
+DefVar $UserGroup$
 
 [Actions]
 ShowBitmap "%ScriptPath%\logo.png" "Windows 10 Upgrade"
@@ -24,20 +26,32 @@ Sub_Start
 
 [Sub_Start]
 Set $Progress$ = GetRegistryStringValue32("[HKEY_LOCAL_MACHINE\SOFTWARE\opsi.org\winst\%installingProdName%] Progress")
+; https://en.wikipedia.org/wiki/Windows_10_version_history
+;Set $SupportedBuildNumber$ = "17763"
+; To force to re-upgrade of clients which are up-to-date (for testing purposes)
+Set $SupportedBuildNumber$ = "99999"
+
 if ($Progress$ = "")
-; Schritt 1: Autologin-Zustand sichern, lokalen Admin anlegen, Autologin einrichten, Tastatur und Maus sperren, lokales Skript und Setup kopieren und in den Autostart legen, Neuinstallation vormerken, Computer neu starten.
-Sub_StepOne
+  ; Schritt 1: Autologin-Zustand sichern, lokalen Admin anlegen, Autologin
+  ; einrichten, Tastatur und Maus sperren, lokales Skript und Setup kopieren
+  ; und in den Autostart legen, Neuinstallation vormerken, Computer neu
+  ; starten.
+  Sub_StepOne
 endif
 
 if ($Progress$ = "1")
-  ; Schritt 2: Dieser Teil läuft lokal ab - Upgrade ausführen und prüfen ob das erfolgreich war, Fehler speichern und Computer neu starten, siehe localsetup.ins
-  ; Falls das Hauptskript während des Setupvorgangs startet, Neuinstallation vormerken und Skript sofort beenden, damit Login des Admins möglich ist
+  ; Schritt 2: Dieser Teil läuft lokal ab - Upgrade ausführen und prüfen ob das
+  ; erfolgreich war, Fehler speichern und Computer neu starten, siehe
+  ; localsetup.ins
+  ; Falls das Hauptskript während des Setupvorgangs startet, Neuinstallation
+  ; vormerken und Skript sofort beenden, damit Login des Admins möglich ist.
   OpsiServiceCall_Reinstall
   ExitWindows /ImmediateLogout
 endif
 
 if ($Progress$ = "2")
-  ; Nach dem das Upgrade durchgeführt wurde, Tastatur erneut sperren (sie wird wieder freigegeben und ermöglicht es jedermann Admin-Rechte zu erlangen).
+  ; Nach dem das Upgrade durchgeführt wurde, Tastatur erneut sperren (sie wird
+  ; wieder freigegeben und ermöglicht es jedermann Admin-Rechte zu erlangen).
   Registry_LockKeyboard
   Set $Progress$ = "3"
   Registry_UpdateProgress /32bit
@@ -69,7 +83,7 @@ endif
 Set $MSVersionMap$ = GetMSVersionMap
 Set $BuildNumber$ = TakeString("1", SplitString(TakeString("2", $MSVersionMap$), "="))
 
-if CompareDotSeparatedNumbers($BuildNumber$, "<", "15063")
+if CompareDotSeparatedNumbers($BuildNumber$, "<", $SupportedBuildNumber$)
   Set $UpgradeRequired$ = "true"
 else
   comment "No upgrade required, Windows 10 seems to be up-to-date."
@@ -113,7 +127,8 @@ if ($UpgradeRequired$ = "true")
   LogError "Windows 10 is still not up-to-date."
   IsFatalError
 else
-  ; Reinstall Registry Patch and Client Agent to apply some settings which are lost during upgrade again
+  ; Reinstall Registry Patch and Client Agent to apply some settings which are
+  ; lost during upgrade again
   OpsiServiceCall_Reinstall_RegPatch
   OpsiServiceCall_Reinstall_ClientAgent
 endif
@@ -178,7 +193,7 @@ Set $AdminGroup$ = SidToName("S-1-5-32-544")
 Set $UserGroup$ = SidToName("S-1-5-32-545")
 DosInAnIcon_UserDel
 DosInAnIcon_UserAdd
-Registry_EnableAutoLogin /sysnative
+Registry_EnableAutoLogin /SysNative
 
 [DosInAnIcon_UserDel]
 @echo off
@@ -189,6 +204,8 @@ del /S /Q "%ProfileDir%\UpgradeSetupAdmin"
 @echo off
 net user UpgradeSetupAdmin $UpgradeSetupAdminPassword$ /add
 net localgroup $AdminGroup$ /add UpgradeSetupAdmin
+; Ensures that our Setup admin is logged in with administrative privileges
+; to circumvent UAC
 net localgroup $UserGroup$ /delete UpgradeSetupAdmin
 
 [Registry_EnableAutoLogin]
