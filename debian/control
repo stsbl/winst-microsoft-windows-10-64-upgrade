@@ -10,7 +10,7 @@ Standards-Version: 4.3.0
 Package: winst-microsoft-windows-10-64-upgrade
 Architecture: all
 Depends: ${iserv:winst:Depends},
-  winst-microsoft-windows-10-64 (>= 18.11.27),
+  winst-microsoft-windows-10-64-data (>= 18.11.27),
 Breaks: winst-microsoft-windows-10-64-upgrade-data
 Conflicts: winst-microsoft-windows-10-64-upgrade-data,
 Replaces: winst-microsoft-windows-10-64-upgrade-data,
