@@ -3,15 +3,11 @@ Upstream-Name: winst-microsoft-windows-10-64-upgrade
 Source: https://it.stsbl.de/documentation/propietary/winst-microsoft-windows-10-64-upgrade
 
 Files: *
-Copyright: 2018 Felix Jacobi <felix.jacobi@stsbl.de>
+Copyright: 2019 Felix Jacobi <felix.jacobi@stsbl.de>
 License: MIT
 
-Files: data/*
-Copyright: 2017 Microsoft Corporation <kunden@microsoft.com>
-License: Microsoft-EULA
-
 Files: debian/*
-Copyright: 2018 Stadtteilschule Blankenese <repository@stsbl.de>
+Copyright: 2019 Stadtteilschule Blankenese <repository@stsbl.de>
 License: MIT
 
 License: MIT
