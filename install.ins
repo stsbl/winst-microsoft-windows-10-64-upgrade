@@ -27,9 +27,9 @@ Sub_Start
 [Sub_Start]
 Set $Progress$ = GetRegistryStringValue32("[HKEY_LOCAL_MACHINE\SOFTWARE\opsi.org\winst\%installingProdName%] Progress")
 ; https://en.wikipedia.org/wiki/Windows_10_version_history
-;Set $SupportedBuildNumber$ = "17763"
+Set $SupportedBuildNumber$ = "17763"
 ; To force to re-upgrade of clients which are up-to-date (for testing purposes)
-Set $SupportedBuildNumber$ = "99999"
+;Set $SupportedBuildNumber$ = "99999"
 
 if ($Progress$ = "")
   ; Schritt 1: Autologin-Zustand sichern, lokalen Admin anlegen, Autologin
@@ -237,6 +237,7 @@ AddLine '@echo off'
 ; kill explorer to hide the windows gui
 AddLine 'taskkill /IM explorer.exe /F'
 AddLine 'reg.exe import %SystemDrive%\tmp\%installingProdName%\win10.reg'
+AddLine 'net use p: /delete /yes'
 AddLine 'net use p: \\$Hostname$\netlogon $PCPatchPassword$ /user:pcpatch /persistent:no'
 AddLine 'call %SystemDrive%\tmp\opsi-client-agent\install.bat %opsiservicePassword% $Servername$ $Hostname$'
 AddLine 'reg.exe import %SystemDrive%\tmp\%installingProdName%\progress_step_3.reg /reg:32'
