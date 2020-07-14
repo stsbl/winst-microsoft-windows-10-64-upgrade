@@ -6,6 +6,7 @@ Build-Depends: debhelper (>= 10),
   iserv-dev,
   iserv3-dev,
 Standards-Version: 4.5.0
+Homepage: https://it.stsbl.de/documentation/proprietary/winst-microsoft-windows-10-64-upgrade
 
 Package: winst-microsoft-windows-10-64-upgrade
 Architecture: all
