@@ -1,17 +1,17 @@
 Source: winst-microsoft-windows-10-64-upgrade
 Section: non-free/misc
-Priority: extra
+Priority: optional
 Maintainer: Stadtteilschule Blankenese <repository@stsbl.de>
 Build-Depends: debhelper (>= 10),
   iserv-dev,
   iserv3-dev,
-Standards-Version: 4.3.0
+Standards-Version: 4.5.0
 
 Package: winst-microsoft-windows-10-64-upgrade
 Architecture: all
 Depends: ${iserv:winst:Depends},
-  winst-microsoft-windows-10-64-data (>= 18.11.27),
-Breaks: winst-microsoft-windows-10-64-upgrade-data
+  winst-microsoft-windows-10-64-data (>= 20.06.24-1.0),
+Breaks: winst-microsoft-windows-10-64-upgrade-data,
 Conflicts: winst-microsoft-windows-10-64-upgrade-data,
 Replaces: winst-microsoft-windows-10-64-upgrade-data,
 Xb-Private-IServ-Revision: ${iserv:Revision}

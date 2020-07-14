@@ -27,7 +27,7 @@ Sub_Start
 [Sub_Start]
 Set $Progress$ = GetRegistryStringValue32("[HKEY_LOCAL_MACHINE\SOFTWARE\opsi.org\winst\%installingProdName%] Progress")
 ; https://en.wikipedia.org/wiki/Windows_10_version_history
-Set $SupportedBuildNumber$ = "17763"
+Set $SupportedBuildNumber$ = "2004"
 ; To force to re-upgrade of clients which are up-to-date (for testing purposes)
 ;Set $SupportedBuildNumber$ = "99999"
 
@@ -81,7 +81,7 @@ if CompareDotSeparatedNumbers($MSVersionInfo$, "<", "10.0")
 endif
 
 Set $MSVersionMap$ = GetMSVersionMap
-Set $BuildNumber$ = TakeString("1", SplitString(TakeString("2", $MSVersionMap$), "="))
+Set $BuildNumber$ = GetValue("ReleaseID", $MSVersionMap$)
 
 if CompareDotSeparatedNumbers($BuildNumber$, "<", $SupportedBuildNumber$)
   Set $UpgradeRequired$ = "true"
@@ -94,6 +94,7 @@ endif
 Sub_Check
 if ($UpgradeRequired$ = "true")
   ; Cleanup every rests to prevent conflicts
+  LinkFolder_Cleanup
   Files_Cleanup
   Files_Copy
   Sub_BackupAutoLogon
@@ -138,6 +139,7 @@ deletekey [HKEY_LOCAL_MACHINE\SOFTWARE\opsi.org\winst\%installingProdName%]
 
 [LinkFolder_Cleanup]
 set_basefolder common_startup
+set_subfolder ""
 delete_element "Windows 10 Upgrade"
 
 [Files_Copy]
