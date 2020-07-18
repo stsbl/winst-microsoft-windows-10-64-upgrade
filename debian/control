@@ -16,5 +16,5 @@ Breaks: winst-microsoft-windows-10-64-upgrade-data,
 Conflicts: winst-microsoft-windows-10-64-upgrade-data,
 Replaces: winst-microsoft-windows-10-64-upgrade-data,
 Xb-Private-IServ-Revision: ${iserv:Revision}
-Description: winst ${iserv:winst:Description}
+Description: ${iserv:winst:Description}
 Tag: suite::iserv:deploy, role::package
