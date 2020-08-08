@@ -1,0 +1,5 @@
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System]
+; Disable first logon assistant which possibly prevents execution of updates
+; as it interupts the local user executing the update.
+"EnableFirstLogonAnimation"=dword:0
+

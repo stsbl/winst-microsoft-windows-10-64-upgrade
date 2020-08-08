@@ -11,3 +11,4 @@ else
   echo "; Zurückhaltungseinstellungen zurücksetzen"
   echo '"DeferUpgrade"=-'
 fi
+echo
