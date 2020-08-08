@@ -1,3 +1,9 @@
+winst-microsoft-windows-10-64-upgrade (20.07.14-1.1) experimental; urgency=medium
+
+  * Added registry patch to disable first logon assisant which possible prevent execution of update
+
+ -- Felix Jacobi <Felix@jacobi-hamburg.net>  Sat, 08 Aug 2020 21:15:14 +0200
+
 winst-microsoft-windows-10-64-upgrade (20.07.14-1.0) experimental; urgency=medium
 
   * Updated for Windows 10 2004
