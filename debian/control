@@ -2,19 +2,20 @@ Source: winst-microsoft-windows-10-64-upgrade
 Section: non-free/misc
 Priority: optional
 Maintainer: Stadtteilschule Blankenese <repository@stsbl.de>
-Build-Depends: debhelper (>= 10),
-  iserv-dev,
-  iserv3-dev,
+Build-Depends: debhelper-compat (= 13),
+               dh-sequence-iserv,
+               dh-sequence-iserv-winst,
+               dh-sequence-stsbl
 Standards-Version: 4.5.0
 Homepage: https://it.stsbl.de/documentation/proprietary/winst-microsoft-windows-10-64-upgrade
 
 Package: winst-microsoft-windows-10-64-upgrade
 Architecture: all
-Depends: ${iserv:winst:Depends},
-  winst-microsoft-windows-10-64-data (>= 20.06.24-1.0),
-Breaks: winst-microsoft-windows-10-64-upgrade-data,
-Conflicts: winst-microsoft-windows-10-64-upgrade-data,
-Replaces: winst-microsoft-windows-10-64-upgrade-data,
-Xb-Private-IServ-Revision: ${iserv:Revision}
+Depends: winst-microsoft-windows-10-64-data (>= 20.06.24-1.0),
+         ${iserv:winst:Depends}
+Breaks: winst-microsoft-windows-10-64-upgrade-data
+Conflicts: winst-microsoft-windows-10-64-upgrade-data
+Replaces: winst-microsoft-windows-10-64-upgrade-data
+Xb-Private-Iserv-Revision: ${iserv:Revision}
 Description: ${iserv:winst:Description}
 Tag: suite::iserv:deploy, role::package
