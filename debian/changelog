@@ -3,7 +3,7 @@ winst-microsoft-windows-10-64-upgrade (20.07.14-1.2) experimental; urgency=mediu
   * Moved to iservinstall and updated copyright
   * Moved package to misc as no non-free files contained anymore
 
- -- Felix Jacobi <Felix@jacobi-hamburg.net>  Sun, 10 Oct 2021 18:23:24 +0200
+ -- Felix Jacobi <Felix@jacobi-hamburg.net>  Sun, 10 Oct 2021 18:24:40 +0200
 
 winst-microsoft-windows-10-64-upgrade (20.07.14-1.1) experimental; urgency=medium
 
