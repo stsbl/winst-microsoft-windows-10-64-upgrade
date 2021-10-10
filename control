@@ -7,6 +7,5 @@ advice: Dieses Paket ist nur für Computer mit 64-bit Windows geeignet. Das Pake
 version: 20.07.14
 packageVersion: 1.2
 setupScript: install.ins
-licenseRequired: true
 autoUpdate: false
 internet: true
